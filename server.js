@@ -5,12 +5,16 @@ var logger = require("morgan");
 var bodyParser = require ("body-parser");
 var mongoose = require ("mongoose");
 var request = require("request");
-
+var exphbs  = require('express-handlebars');
+var index = require("./routes/index")
 var db = require("./models");
 
 var PORT = 3000;
 
 var app = express();
+
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
 
 app.use(logger("dev"));
 
@@ -18,9 +22,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static("public"));
 
+app.use("/", index);
+
 mongoose.Promise = Promise;
 mongoose.connect("mongodb://localhost/basketball", {
-  // useMongoClient: true
+
+});
+
+app.get("/", function(req, res) {
+
+  res.send("index");
+
 });
 
 app.get("/scrape", function(req, res) {
@@ -50,12 +62,6 @@ request("https://basketball.realgm.com/", function(error, response, html) {
         console.log(doc);
       }
     })
-    // Save these results in an object that we'll push into the results array we defined earlier
-    // results.push({
-    //   title: title,
-    //   link: link,
-    //   summary: summary
-    // });
   });
 
   // Log the results once you've looped through each of the elements found with cheerio
@@ -65,21 +71,6 @@ request("https://basketball.realgm.com/", function(error, response, html) {
 res.send("scrape-complete");
 
 });
-
-// app.get("/articles", function(req, res) {
-//   // Grab every doc in the Articles array
-//   db.Article.find({}, function(error, doc) {
-//     // Log any errors
-//     if (error) {
-//       console.log(error);
-//     }
-//     // Or send the doc to the browser as a json object
-//     else {
-//       // console.log("=========",doc);
-//       res.json(doc);
-//     }
-//   });
-// });
 
   // Route for getting all Articles from the db
 app.get("/articles", function(req, res) {
