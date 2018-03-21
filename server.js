@@ -49,7 +49,7 @@ request("https://basketball.realgm.com/", function(error, response, html) {
 
     $(".secondary-story").each(function(i, element) {
 
-    results.link = $(this).children().attr("href");
+    results.link = "https://basketball.realgm.com/" + $(this).children().attr("href");
     results.summary = $(this).find(".article-content").text();
     results.title = $(this).find(".article-title").text();
     var entry = new db.Article(results);
